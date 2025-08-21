@@ -88,6 +88,18 @@
                         Native to tropical forests, this popular houseplant is known for its large, glossy leaves with
                         natural holes.
                     </p>
+                    <!-- Dynamic DB plant info section -->
+                    <div id="dbDetails" style="display:none; margin-top:1rem;">
+                        <h3 style="margin:0 0 .5rem 0; font-size:1.1rem;">Plant Database Details</h3>
+                        <div class="db-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.75rem;">
+                            <div class="db-field"><strong>Family:</strong> <span id="dbFamily">—</span></div>
+                            <div class="db-field"><strong>Origin:</strong> <span id="dbOrigin">—</span></div>
+                            <div class="db-field"><strong>Uses:</strong> <span id="dbUses">—</span></div>
+                        </div>
+                        <div id="dbImageWrapper" style="margin-top:.75rem; display:none;">
+                            <img id="dbImage" src="" alt="Plant reference image" style="max-width:180px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.15);" />
+                        </div>
+                    </div>
                     <button class="btn btn-secondary">Learn More</button>
                 </div>
             </div>
@@ -145,7 +157,7 @@
         </div>
     </footer>
 
-    <script src="/static/js/script.js"></script>
+    <script src="/static/js/script.js?v=2"></script>
 </body>
 
 </html>
