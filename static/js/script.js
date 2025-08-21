@@ -95,21 +95,36 @@ function uploadAndClassify(file) {
         })
         .then(data => {
             console.log("Received data:", data);
+            if (data.plant_info) {
+                console.log("Plant info from DB:", data.plant_info);
+            } else {
+                console.log("No plant info found in DB for this classification.");
+            }
 
             // Update UI with prediction results
             const confidencePercent = data.prediction.confidence * 100;
 
             if (data.prediction.is_plant) {
                 document.getElementById('plantName').textContent = data.prediction.class_name;
-                document.getElementById('scientificName').textContent = "(Identified Plant)";
+                if (data.plant_info && data.plant_info.scientific_name) {
+                    document.getElementById('scientificName').textContent = data.plant_info.scientific_name;
+                } else {
+                    document.getElementById('scientificName').textContent = "(Identified Plant)";
+                }
                 document.getElementById('confidenceText').textContent = `${confidencePercent.toFixed(2)}% confidence`;
                 document.getElementById('confidenceFill').style.width = `${confidencePercent}%`;
 
-                // You can add more details here if your API provides them
-                document.getElementById('lightReq').textContent = "Sunlight requirements vary";
-                document.getElementById('waterReq').textContent = "Check watering needs";
-                document.getElementById('plantDescription').textContent =
-                    `This has been identified as ${data.prediction.class_name} with ${confidencePercent.toFixed(2)}% confidence.`;
+                // Populate description & other DB driven info if available
+                if (data.plant_info) {
+                    document.getElementById('plantDescription').textContent = data.plant_info.description || `Identified as ${data.prediction.class_name}.`;
+                    document.getElementById('lightReq').textContent = data.plant_info.origin || "Origin unknown";
+                    document.getElementById('waterReq').textContent = data.plant_info.uses || "Uses info unavailable";
+                } else {
+                    document.getElementById('lightReq').textContent = "Sunlight requirements vary";
+                    document.getElementById('waterReq').textContent = "Check watering needs";
+                    document.getElementById('plantDescription').textContent =
+                        `This has been identified as ${data.prediction.class_name} with ${confidencePercent.toFixed(2)}% confidence.`;
+                }
             } else {
                 document.getElementById('plantName').textContent = "Not a recognized plant";
                 document.getElementById('scientificName').textContent = "";
