@@ -59,7 +59,7 @@ function displayImage(file) {
     const reader = new FileReader();
     reader.onload = function (e) {
         document.getElementById('uploadedImage').src = e.target.result;
-        resultsSection.style.display = 'block';
+    resultsSection.style.display = 'block';
         // Smooth scroll to results
         resultsSection.scrollIntoView({ behavior: 'smooth' });
     }
@@ -75,6 +75,9 @@ function uploadAndClassify(file) {
     document.getElementById('scientificName').textContent = "";
     document.getElementById('confidenceText').textContent = "Processing";
     document.getElementById('confidenceFill').style.width = "0%";
+    // Hide DB details initially
+    const dbDetails = document.getElementById('dbDetails');
+    if (dbDetails) dbDetails.style.display = 'none';
 
     const formData = new FormData();
     formData.append('file', file);
@@ -117,8 +120,26 @@ function uploadAndClassify(file) {
                 // Populate description & other DB driven info if available
                 if (data.plant_info) {
                     document.getElementById('plantDescription').textContent = data.plant_info.description || `Identified as ${data.prediction.class_name}.`;
+                    // Use origin & uses temporarily in existing slots until custom labels added
                     document.getElementById('lightReq').textContent = data.plant_info.origin || "Origin unknown";
                     document.getElementById('waterReq').textContent = data.plant_info.uses || "Uses info unavailable";
+                    // Show DB panel
+                    if (dbDetails) {
+                        dbDetails.style.display = 'block';
+                        document.getElementById('dbFamily').textContent = data.plant_info.family || '—';
+                        document.getElementById('dbOrigin').textContent = data.plant_info.origin || '—';
+                        document.getElementById('dbUses').textContent = data.plant_info.uses || '—';
+                        const dbImageWrapper = document.getElementById('dbImageWrapper');
+                        if (data.plant_info.image_url) {
+                            document.getElementById('dbImage').src = data.plant_info.image_url;
+                            dbImageWrapper.style.display = 'block';
+                        } else {
+                            dbImageWrapper.style.display = 'none';
+                        }
+                        console.log('DB details updated in DOM');
+                    }
+                    // Ensure section is visible (in case not yet shown by displayImage due to async timing)
+                    resultsSection.style.display = 'block';
                 } else {
                     document.getElementById('lightReq').textContent = "Sunlight requirements vary";
                     document.getElementById('waterReq').textContent = "Check watering needs";
@@ -135,6 +156,7 @@ function uploadAndClassify(file) {
                 document.getElementById('waterReq').textContent = "N/A";
                 document.getElementById('plantDescription').textContent =
                     "This doesn't appear to be one of the plants our AI can currently identify. Please try with a different image.";
+                if (dbDetails) dbDetails.style.display = 'none';
             }
         })
         .catch(error => {
