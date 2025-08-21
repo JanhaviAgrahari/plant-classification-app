@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text
 from database import Base
 
+
 class Plant(Base):
     __tablename__ = "plants"
 

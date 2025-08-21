@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models
+from sqlalchemy import text
 from ml.model import load_model, classify_image
 import shutil
 import os
@@ -69,7 +70,8 @@ async def upload_image(file: UploadFile = File(...)):
     # Create uploads directory if it doesn't exist
     upload_folder = "static/uploads/"
     os.makedirs(upload_folder, exist_ok=True)
-    file_location = os.path.join(upload_folder, file.filename)
+    safe_filename = file.filename if file.filename is not None else "uploaded_file"
+    file_location = os.path.join(upload_folder, safe_filename)
     print(f"Saving to: {file_location}")
     
     # Save the uploaded file
